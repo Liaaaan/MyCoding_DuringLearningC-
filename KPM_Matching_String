@@ -1,0 +1,98 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+//当str与template在str[i]出发生不匹配
+//则 k=next[i] 将template[k]与str[i]匹配
+
+using namespace std;
+int* getnext(int *maxL,int size)
+{
+	static int *next = new int[size];
+	next[0] = -1;
+	for (int i = 1; i < size; i++)
+	{
+		next[i] = maxL[i - 1];
+	}
+	return next;
+}
+int* getmaxL(string tpstr )
+{
+	static int *maxsamearray = new int[tpstr.size()];
+	maxsamearray[0] = 0;
+	int maxsame = 0;//最大相同前后缀串大小
+	int posa = 0;//原字符串的iterator
+	bool havematched = false;
+	while (++posa < tpstr.size() )//当posa没有到最后的时候
+	{
+		if (tpstr[maxsame] == tpstr[posa])
+		{
+			maxsame++;
+			maxsamearray[posa] = maxsame;
+			havematched = true;
+		}
+		else if (havematched)
+		{
+			maxsame = 0;
+			posa--;
+			havematched = false;
+
+		}
+		else
+		{
+			maxsamearray[posa] = 0;
+			havematched = false;
+		}
+
+	}
+	return maxsamearray;
+}
+int main()
+{
+	string tpstr("abaabcac");//abaabcac
+	string a("abaababaabcac5");//abaababaabcac5
+	cout << "str:\t";
+	//getline(cin, a);
+	cout << "tpstr\t";
+	//getline(cin, tpstr);
+	int *maxL = getmaxL(tpstr);
+	int *next = getnext(maxL,tpstr.size());
+	int pi = 0;
+	int pj = 0;
+	while (pj < tpstr.size() && pi < a.size())
+	{
+		if (a[pi] == tpstr[pj])
+		{
+			pi++;
+			pj++;
+		}
+		else if(pj!=0)
+		{
+			pj = next[pj];
+		}
+		else 
+		{
+			pj = 0;
+			pi++;
+		}
+	}
+	if (pj == tpstr.size())
+	{
+		cout << pi-tpstr.size();
+	}
+	else
+	{
+		cout << -1;
+	}
+	cout << endl<<endl<<"tpstr:\t";
+	for (int i = 0; i < tpstr.size(); i++)
+		cout << setw(4) << tpstr[i];
+	cout << endl << "maxL:\t";
+	for (int i = 0; i < tpstr.size(); i++)
+		cout << setw(4) << maxL[i];
+	cout << endl<<"next:\t";
+	for (int i = 0; i < tpstr.size(); i++)
+		cout << setw(4) << next[i]+1;
+
+
+
+}
